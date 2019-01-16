@@ -2,10 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Roberto Freato</Authors>
+    <Company />
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Description>This extension lets you define an external source (now in Azure Storage and Google Cloud storage only) to host the ocelot.json configuration. The extension will poll the external source every CheckingInterval seconds.</Description>
+    <Copyright />
+    <PackageLicenseUrl>https://raw.githubusercontent.com/childotg/Ocelot.Extensions/master/LICENSE.md</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/childotg/Ocelot.Extensions</PackageProjectUrl>
+    <PackageTags>API, Gateway, Ocelot, Configuration, Azure, Google Cloud</PackageTags>
+    <Product>Ocelot.Extensions</Product>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ocelot" Version="13.0.0" />
+    <PackageReference Include="Ocelot" Version="11.0.0" />
   </ItemGroup>
 
 
