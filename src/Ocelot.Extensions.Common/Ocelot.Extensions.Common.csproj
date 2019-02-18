@@ -1,7 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Roberto Freato</Authors>
+    <Company />
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Description>This is the common library for the Ocelot.Extensions.* packages.</Description>
+    <Copyright />
+    <PackageLicenseUrl>https://raw.githubusercontent.com/childotg/Ocelot.Extensions/master/LICENSE.md</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/childotg/Ocelot.Extensions</PackageProjectUrl>
+    <PackageTags>API, Gateway, Ocelot, Configuration, Common</PackageTags>
+    <Product>Ocelot.Extensions</Product>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
