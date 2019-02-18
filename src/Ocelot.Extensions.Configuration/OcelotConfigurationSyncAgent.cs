@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Ocelot.Configuration.File;
 using Ocelot.Configuration.Setter;
+using Ocelot.Extensions.Configuration.Repository;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -17,10 +18,10 @@ namespace Ocelot.Extensions.Configuration
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
         private readonly OcelotConfiguration _config;
-        private readonly IFileConfigurationSetter _setter;
+        private readonly IFileConfigurationRepositoryExtended _setter;
         
 
-        public OcelotConfigurationSyncAgent(OcelotConfiguration config, IFileConfigurationSetter configSetter
+        public OcelotConfigurationSyncAgent(OcelotConfiguration config, IFileConfigurationRepositoryExtended configSetter
             , ILoggerFactory loggerFactory)
         {
             this._setter = configSetter;
@@ -70,7 +71,7 @@ namespace Ocelot.Extensions.Configuration
                 {
                     _logger.LogTrace($"Version {previousVersion} transitioned to version {result.Version}");
                     //retryAttempts = 0;
-                    await _setter.Set(result.Configuration);
+                    await _setter.SetExtended(result.Configuration);
                     _logger.LogTrace($"Ocelot configuration updated");
                 }
                 else

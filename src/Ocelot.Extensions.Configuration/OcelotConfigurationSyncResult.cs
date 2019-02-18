@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Ocelot.Configuration.File;
+using Ocelot.Extensions.Common;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,13 +19,13 @@ namespace Ocelot.Extensions.Configuration
 
         }
 
-        public FileConfiguration Configuration
+        public FileConfigurationExtended Configuration
         {
             get
             {
                 try
                 {
-                    return JsonConvert.DeserializeObject<FileConfiguration>(Result);
+                    return JsonConvert.DeserializeObject<FileConfigurationExtended>(Result);
                 }
                 catch (Exception ex)
                 {

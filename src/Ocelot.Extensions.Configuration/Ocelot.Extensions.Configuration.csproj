@@ -11,11 +11,15 @@
     <PackageProjectUrl>https://github.com/childotg/Ocelot.Extensions</PackageProjectUrl>
     <PackageTags>API, Gateway, Ocelot, Configuration, Azure, Google Cloud</PackageTags>
     <Product>Ocelot.Extensions</Product>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Ocelot" Version="11.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ocelot.Extensions.Common\Ocelot.Extensions.Common.csproj" />
   </ItemGroup>
 
 

@@ -79,6 +79,9 @@ This extensions requires the following configuration section in the running host
 ```
 Depending on the RepositoryType choosen (`AzureStorage, GoogleCloudStorage`) it will use the appropriate sub-section with access details.
 
+### Known issues
+For now, the configuration extension overrides the default `IFileConfigurationSetter` provider of Ocelot. This behaviour has been overridden to overcome the limitation of a fixed `FileConfiguration` schema for the `ocelot.json` configuration file. In the future, I will integrate better the existing Ocelot options (InMemory, Consul) with the extension.
+
 ### Sample: PollingConfigurationFromAzure
 This sample show how to integrate the `Ocelot.Extensions.Configuration` into your existing Ocelot project.
 
