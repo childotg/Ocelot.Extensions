@@ -7,7 +7,7 @@ using Ocelot.Configuration.Repository;
 using Ocelot.Extensions.Common;
 using Ocelot.Responses;
 
-namespace Ocelot.Extensions.Configuration.Repository
+namespace Ocelot.Extensions.Common.Repository
 {
     public class DiskFileConfigurationRepositoryExtended : DiskFileConfigurationRepository, IFileConfigurationRepositoryExtended
     {
@@ -18,7 +18,9 @@ namespace Ocelot.Extensions.Configuration.Repository
 
         public DiskFileConfigurationRepositoryExtended(IHostingEnvironment hostingEnvironment):base(hostingEnvironment)
         {
-            _environmentFilePath = $"{AppContext.BaseDirectory}{ConfigurationFileName}{(string.IsNullOrEmpty(hostingEnvironment.EnvironmentName) ? string.Empty : ".")}{hostingEnvironment.EnvironmentName}.json";
+            _environmentFilePath = $"{AppContext.BaseDirectory}{ConfigurationFileName}"
+                //+ $"{(string.IsNullOrEmpty(hostingEnvironment.EnvironmentName) ? string.Empty : ".")}{hostingEnvironment.EnvironmentName}"
+                +".json";
 
             _ocelotFilePath = $"{AppContext.BaseDirectory}{ConfigurationFileName}.json";
         }

@@ -2,7 +2,7 @@
 using Ocelot.Extensions.Common;
 using Ocelot.Responses;
 
-namespace Ocelot.Extensions.Configuration.Repository
+namespace Ocelot.Extensions.Common.Repository
 {
     public interface IFileConfigurationRepositoryExtended
     {

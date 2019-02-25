@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Ocelot.Configuration.File;
 using Ocelot.Configuration.Setter;
-using Ocelot.Extensions.Configuration.Repository;
+using Ocelot.Extensions.Common.Repository;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;

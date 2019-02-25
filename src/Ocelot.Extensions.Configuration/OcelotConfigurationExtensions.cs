@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Ocelot.Extensions.Common.Repository;
 using Ocelot.Extensions.Configuration;
-using Ocelot.Extensions.Configuration.Repository;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,9 +13,9 @@ namespace Ocelot.DependencyInjection
     {
         public static IOcelotBuilder WithConfigurationRepository(this IOcelotBuilder builder,string configKey= "Ocelot.Extensions:Configuration")
         {
+            builder.WithRouteExtensions();
             var config = new OcelotConfiguration();
-            builder.Configuration.Bind(configKey, config);
-            builder.Services.AddSingleton<IFileConfigurationRepositoryExtended, DiskFileConfigurationRepositoryExtended>();
+            builder.Configuration.Bind(configKey, config);            
             builder.Services.AddSingleton(config);            
             builder.Services.AddHostedService<OcelotConfigurationSyncAgent>();
             return builder;

@@ -7,35 +7,39 @@ namespace Ocelot.Extensions.Common
 {
     public class FileConfigurationExtended: FileConfiguration
     {
-        public OcelotExtensions Extensions { get; set; }
+        public RouteExtensions RouteExtensions { get; set; }
     }
 
-    public class OcelotExtensions
+    public class RouteExtensions
     {
-        public RouteExtensionsDelegatingHandlers DelegatingHandlerExtensions { get; set; }
+        public RouteExtensionsReplaceHandler ReplaceHandler { get; set; }
+        
+        
+        
     }
 
-    public class RouteExtensionsDelegatingHandlers
+    public class RouteExtensionsReplaceHandler
     {
-        public RouteExtensionsDelegatingHandlersReplaceHandler ReplaceHandler { get; set; }
+        public int Settings { get; set; }
+        public RouteExtensionsReplaceHandlerRule[] Rules { get; set; }
     }
 
-    public class RouteExtensionsDelegatingHandlersReplaceHandler
+    public class RouteExtensionsReplaceHandlerRule
     {
-        public string[] AppliesToRoutes { get; set; }
-        public RouteExtensionsDelegatingHandlersReplaceHandlerFindReplaceHeader[] ReplaceDownstreamHeaders { get; set; }
-        public RouteExtensionsDelegatingHandlersReplaceHandlerFindReplace[] ReplaceDownstreamContent { get; set; }
-        public RouteExtensionsDelegatingHandlersReplaceHandlerFindReplace[] ReplaceUpstreamContent { get; set; }
+        public string[] AppliesTo { get; set; }
+        public RouteExtensionsReplaceHandlerFindReplaceHeader[] ReplaceDownstreamHeaders { get; set; }
+        public RouteExtensionsReplaceHandlerFindReplace[] ReplaceDownstreamContent { get; set; }
+        public RouteExtensionsReplaceHandlerFindReplace[] ReplaceUpstreamContent { get; set; }
 
 
     }
 
-    public class RouteExtensionsDelegatingHandlersReplaceHandlerFindReplaceHeader : RouteExtensionsDelegatingHandlersReplaceHandlerFindReplace
+    public class RouteExtensionsReplaceHandlerFindReplaceHeader : RouteExtensionsReplaceHandlerFindReplace
     {
         public string Header { get; set; }
     }
 
-    public class RouteExtensionsDelegatingHandlersReplaceHandlerFindReplace
+    public class RouteExtensionsReplaceHandlerFindReplace
     {
         public string Find { get; set; }
         public string Replace { get; set; }
