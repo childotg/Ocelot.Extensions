@@ -1,7 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Roberto Freato</Authors>
+    <Company />
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Description>This extension collects some tools to manipulate/transform the requests/responses passing through the API Gateway.</Description>
+    <Copyright />
+    <PackageLicenseUrl>https://raw.githubusercontent.com/childotg/Ocelot.Extensions/master/LICENSE.md</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/childotg/Ocelot.Extensions</PackageProjectUrl>
+    <PackageTags>API, Gateway, Ocelot, Transformation, Manipulation, Replace, Replacement</PackageTags>
+    <Product>Ocelot.Extensions</Product>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
