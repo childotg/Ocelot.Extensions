@@ -5,12 +5,12 @@ using Ocelot.Middleware;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace PollingConfigurationFromAzure
+namespace OcelotExtendedSample
 {
     public class Program
     {
         public static void Main(string[] args)
-        {         
+        {
             new WebHostBuilder()
             .UseKestrel()
             .UseContentRoot(Directory.GetCurrentDirectory())
@@ -18,13 +18,14 @@ namespace PollingConfigurationFromAzure
             {
                 config
                     .SetBasePath(hostingContext.HostingEnvironment.ContentRootPath)
-                    .AddJsonFile("appsettings.json", true, true)                    
+                    .AddJsonFile("appsettings.json", true, true)
                     .AddJsonFile("ocelot.json", false, true)
                     .AddEnvironmentVariables();
             })
             .ConfigureServices((ctx, s) => {
                 s.AddOcelot()
-                    .WithConfigurationRepository();                
+                    //.WithConfigurationRepository()
+                    .WithReplaceHandler();
             })
             .ConfigureLogging((hostingContext, logging) =>
             {
@@ -32,12 +33,11 @@ namespace PollingConfigurationFromAzure
             })
             .UseIISIntegration()
             .Configure(app =>
-            {                
-                app.UseOcelot().Wait();
+            {
+                app.UseOcelotExtended().Wait();
             })
             .Build()
             .Run();
         }
-
     }
 }

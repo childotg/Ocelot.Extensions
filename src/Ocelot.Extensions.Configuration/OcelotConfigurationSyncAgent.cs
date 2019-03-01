@@ -19,15 +19,17 @@ namespace Ocelot.Extensions.Configuration
         private readonly ILoggerFactory _loggerFactory;
         private readonly OcelotConfiguration _config;
         private readonly IFileConfigurationRepositoryExtended _setter;
+        private readonly IHttpClientFactory _httpClientFactory;
         
 
         public OcelotConfigurationSyncAgent(OcelotConfiguration config, IFileConfigurationRepositoryExtended configSetter
-            , ILoggerFactory loggerFactory)
+            , ILoggerFactory loggerFactory,IHttpClientFactory factory)
         {
             this._setter = configSetter;
             this._config = config;
             this._loggerFactory = loggerFactory;
-            this._logger = loggerFactory.CreateLogger<OcelotConfigurationSyncAgent>();        
+            this._logger = loggerFactory.CreateLogger<OcelotConfigurationSyncAgent>();
+            this._httpClientFactory = factory;
         }
         
 
@@ -41,7 +43,7 @@ namespace Ocelot.Extensions.Configuration
                 _logger.LogInformation($"Using the {type} repository...");
                 var ns = _config.GetType().Namespace;
                 var configSection = _config.GetType().GetProperty(type).GetValue(_config);
-                instance = Activator.CreateInstance(Type.GetType($"{ns}.{type}.{type}Service"), configSection, _loggerFactory)
+                instance = Activator.CreateInstance(Type.GetType($"{ns}.{type}.{type}Service"), configSection, _loggerFactory,_httpClientFactory)
                     as IOcelotConfigurationFetchService;
             }
             catch (Exception ex)
@@ -49,17 +51,9 @@ namespace Ocelot.Extensions.Configuration
                 _logger.LogError(ex, $"Background service cannot initialize!");
                 return;
             }
-            
 
             OcelotConfigurationSyncResult result = null;
             _logger.LogInformation("Entering the continous polling process...");
-
-            //TO THE READER: here there is the draft of a home-made retry strategy instead using something more robust like Polly.
-            //Why this choice?
-            // - To reduce the dependencies
-            // - To avoid too many attempts (and costs) in case of a failure
-            // - Also, the failure can be HTTP and also in the actual content of the file, so the retry strategy on the only HttpClient is useless
-            //At this time it is however disabled.
 
             int retryAttempts = 0;
             while (!stoppingToken.IsCancellationRequested)
@@ -71,7 +65,7 @@ namespace Ocelot.Extensions.Configuration
                 {
                     _logger.LogTrace($"Version {previousVersion} transitioned to version {result.Version}");
                     //retryAttempts = 0;
-                    await _setter.SetExtended(result.Configuration);
+                    _setter.SetExtended(result.Configuration);
                     _logger.LogTrace($"Ocelot configuration updated");
                 }
                 else

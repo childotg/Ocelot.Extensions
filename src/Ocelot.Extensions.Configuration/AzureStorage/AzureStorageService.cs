@@ -15,10 +15,10 @@ namespace Ocelot.Extensions.Configuration.AzureStorage
     {
         private readonly AzureStorageConfiguration _config;
         
-        public AzureStorageService(AzureStorageConfiguration config, ILoggerFactory loggerFactory)
+        public AzureStorageService(AzureStorageConfiguration config, ILoggerFactory loggerFactory,
+            IHttpClientFactory httpFactory) : base(httpFactory, loggerFactory)
         {
-            this._config = config;
-            this._logger = loggerFactory.CreateLogger<AzureStorageService>();
+            this._config = config;            
         }
 
 

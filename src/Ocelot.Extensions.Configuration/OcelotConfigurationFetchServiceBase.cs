@@ -10,6 +10,13 @@ namespace Ocelot.Extensions.Configuration
     public abstract class OcelotConfigurationFetchServiceBase : IOcelotConfigurationFetchService
     {
         protected ILogger _logger;
+        protected IHttpClientFactory _clientFactory;
+
+        public OcelotConfigurationFetchServiceBase(IHttpClientFactory httpFactory, ILoggerFactory loggerFactory)
+        {
+            this._clientFactory = httpFactory;
+            this._logger = loggerFactory.CreateLogger(this.GetType());
+        }
         
         protected abstract Task<OcelotConfigurationContentRaw> FetchDataImpl(string latestVersion);
         public async Task<OcelotConfigurationSyncResult> FetchData(string latestVersion)
@@ -31,29 +38,31 @@ namespace Ocelot.Extensions.Configuration
 
         protected async Task<OcelotConfigurationContentRaw> GetWithHttpAndETAG(string latestVersion, string signedUri)
         {
-            var client = new HttpClient();
-            var head = new HttpRequestMessage(HttpMethod.Head, signedUri);
-            _logger.LogTrace($"Looking with HEAD at the resource {signedUri} with version {latestVersion}");
-            var headers = await client.SendAsync(head);
-
-            if (headers.IsSuccessStatusCode)
+            using (var client = _clientFactory.CreateClient())
             {
-                if (latestVersion == null || (headers.Headers.ETag.Tag != latestVersion))
+                var head = new HttpRequestMessage(HttpMethod.Head, signedUri);
+                _logger.LogTrace($"Looking with HEAD at the resource {signedUri} with version {latestVersion}");
+                var headers = await client.SendAsync(head);
+
+                if (headers.IsSuccessStatusCode)
                 {
-                    var newVersion = headers.Headers.ETag.Tag;
-                    _logger.LogTrace($"Taking most recent version {newVersion} of configuration...");
-                    var request = new HttpRequestMessage(HttpMethod.Get, signedUri);
-                    var response = await client.SendAsync(request);
-                    if (response.Content != null)
-                    {                        
-                        var content = await response.Content.ReadAsStringAsync();
-                        return new OcelotConfigurationContentRaw(content, headers.Headers.ETag.Tag);
+                    if (latestVersion == null || (headers.Headers.ETag.Tag != latestVersion))
+                    {
+                        var newVersion = headers.Headers.ETag.Tag;
+                        _logger.LogTrace($"Taking most recent version {newVersion} of configuration...");
+                        var request = new HttpRequestMessage(HttpMethod.Get, signedUri);
+                        var response = await client.SendAsync(request);
+                        if (response.Content != null)
+                        {
+                            var content = await response.Content.ReadAsStringAsync();
+                            return new OcelotConfigurationContentRaw(content, headers.Headers.ETag.Tag);
+                        }
+                        else throw new InvalidOperationException("Content is empty!");
                     }
-                    else throw new InvalidOperationException("Content is empty!");
+                    else return new OcelotConfigurationContentRaw("", latestVersion);
                 }
-                else return new OcelotConfigurationContentRaw("", latestVersion);
+                else throw new InvalidOperationException("HTTP resource missing, wrong auth settings or invalid URI");
             }
-            else throw new InvalidOperationException("HTTP resource missing, wrong auth settings or invalid URI");
         }
     }
 }

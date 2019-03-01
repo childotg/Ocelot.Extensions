@@ -19,34 +19,36 @@ namespace Ocelot.Extensions.Transform
         //private IOptionsMonitor<RouteExtensions> configuration = null;
         private IHttpContextAccessor httpContext = null;
         private ILogger _logger = null;
-        private Func<RouteExtensionsReplaceHandler> _configurationFactory = null;
         private readonly IFileConfigurationRepositoryExtended _config = null;
         public ReplaceHandler(IFileConfigurationRepositoryExtended config, 
             IHttpContextAccessor accessor,ILoggerFactory loggerFactory)
         {
             this.httpContext = accessor;
-            this._config = config;
-            //this._configurationFactory = configurationFactory;
+            this._config = config;            
             this._logger = loggerFactory.CreateLogger<ReplaceHandler>();
+        }
 
-            //this.configuration.OnChange((newConf) =>
-            //{
-            //    this._logger.LogInformation($"New ReplaceHandler configuration detected...");
-            //});
+        private bool IsSupportedMediaType(string mediaType)
+        {
+            return !string.IsNullOrWhiteSpace(mediaType) && (mediaType.Contains("text") || mediaType.Contains("json") || mediaType.Contains("xml"));
+        }
+
+        private string HeaderValue(IEnumerable<string> values)
+        {
+            if (values != null && values.Any())
+                return string.Join(",", values.ToArray());
+            else return "";
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             try
             {
-                //var configuration = new RouteExtensionsReplaceHandler();
-                var configuration = await _config.GetExtended();
-                //_config.Bind("RouteExtensions:ReplaceHandler", configuration);
-                
+                var configuration = _config.GetExtended();
                 var routeKey = httpContext.HttpContext.Items["RouteKey"];
                 if (routeKey == null) return await base.SendAsync(request, cancellationToken);
 
-                var currentConf = configuration.Data.RouteExtensions.ReplaceHandler.Rules
+                var currentConf = configuration.RouteExtensions.ReplaceHandler.Rules
                     .Where(p => p.AppliesTo != null && p.AppliesTo.Contains(routeKey))
                     .FirstOrDefault();
 
@@ -59,30 +61,44 @@ namespace Ocelot.Extensions.Transform
                     {
                         if (request.Headers.Contains(header.Key))
                         {
-                            var value = new StringBuilder(request.Headers.GetValues(header.Key).First());
-                            request.Headers.Remove(header.Key);
-                            foreach (var toReplace in header.Value)
+                            var values = request.Headers.GetValues(header.Key);
+                            var newValues = new List<string>();
+                            foreach (var val in values)
                             {
-                                value.Replace(toReplace.Find, toReplace.Replace);
+                                var value = new StringBuilder(val);                                
+                                foreach (var toReplace in header.Value)
+                                {
+                                    value.Replace(toReplace.Find, toReplace.Replace);
+                                }
+                                newValues.Add(value.ToString());
                             }
-                            request.Headers.Add(header.Key, value.ToString());
+                            request.Headers.Remove(header.Key);
+                            request.Headers.Add(header.Key, newValues);
                         }
                     }
+                    //Disable compression
+                    request.Headers.Remove("Accept-Encoding");
+
                     //Downstream content                
-                    var content = new StringBuilder(await request.Content.ReadAsStringAsync());
-                    foreach (var toReplace in currentConf.ReplaceDownstreamContent)
+                    if (request.Content != null && IsSupportedMediaType(request.Content?.Headers?.ContentType?.MediaType))
                     {
-                        content.Replace(toReplace.Find, toReplace.Replace);
-                    }
-                    request.Content = new StringContent(content.ToString(), Encoding.UTF8, request.Content.Headers.ContentType.MediaType);
+                        var content = new StringBuilder(await request.Content.ReadAsStringAsync());
+                        foreach (var toReplace in currentConf.ReplaceDownstreamContent)
+                        {
+                            content.Replace(toReplace.Find, toReplace.Replace);
+                        }
+                        request.Content = new StringContent(content.ToString(), Encoding.UTF8, request.Content.Headers.ContentType.MediaType);
+                    }                    
 
                     //Go with request
                     var response = await base.SendAsync(request, cancellationToken);
 
-                    if (response.IsSuccessStatusCode)
+                    if (response.IsSuccessStatusCode && IsSupportedMediaType(response.Content?.Headers?.ContentType?.MediaType))
                     {
                         //Upstream content
-                        var result = new StringBuilder(await response.Content.ReadAsStringAsync());
+                        var content = await response.Content.ReadAsStringAsync();    
+                        
+                        var result = new StringBuilder(content);
                         foreach (var toReplace in currentConf.ReplaceUpstreamContent)
                         {
                             result.Replace(toReplace.Find, toReplace.Replace);

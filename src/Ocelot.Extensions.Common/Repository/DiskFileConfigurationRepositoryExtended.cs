@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json;
@@ -9,39 +11,35 @@ using Ocelot.Responses;
 
 namespace Ocelot.Extensions.Common.Repository
 {
-    public class DiskFileConfigurationRepositoryExtended : DiskFileConfigurationRepository, IFileConfigurationRepositoryExtended
+    public class DiskFileConfigurationRepositoryExtended : IFileConfigurationRepository, IFileConfigurationRepositoryExtended
     {
         private readonly string _environmentFilePath;
         private readonly string _ocelotFilePath;
         private static readonly object _lock = new object();
-        private const string ConfigurationFileName = "ocelot";
+        
 
-        public DiskFileConfigurationRepositoryExtended(IHostingEnvironment hostingEnvironment):base(hostingEnvironment)
+        public DiskFileConfigurationRepositoryExtended(IHostingEnvironment hostingEnvironment)
         {
-            _environmentFilePath = $"{AppContext.BaseDirectory}{ConfigurationFileName}"
-                //+ $"{(string.IsNullOrEmpty(hostingEnvironment.EnvironmentName) ? string.Empty : ".")}{hostingEnvironment.EnvironmentName}"
-                +".json";
-
-            _ocelotFilePath = $"{AppContext.BaseDirectory}{ConfigurationFileName}.json";
+            _environmentFilePath = $"{AppContext.BaseDirectory}{Project.ConfigurationFileName}"
+                + $"{(string.IsNullOrEmpty(hostingEnvironment.EnvironmentName) ? string.Empty : ".")}{hostingEnvironment.EnvironmentName}"
+                + ".json";
+            _ocelotFilePath = $"{AppContext.BaseDirectory}{Project.ConfigurationFileName}.json";
         }
 
-        public Task<Response<FileConfigurationExtended>> GetExtended()
+        public FileConfigurationExtended GetExtended()
         {
             string jsonConfiguration;
-
             lock (_lock)
             {
-                jsonConfiguration = System.IO.File.ReadAllText(_environmentFilePath);
+                jsonConfiguration = System.IO.File.ReadAllText(_ocelotFilePath);
             }
-
             var fileConfiguration = JsonConvert.DeserializeObject<FileConfigurationExtended>(jsonConfiguration);
-
-            return Task.FromResult<Response<FileConfigurationExtended>>(new OkResponse<FileConfigurationExtended>(fileConfiguration));
+            return fileConfiguration;
         }
 
-        public Task<Response> SetExtended(FileConfigurationExtended fileConfiguration)
+        public void SetExtended(FileConfigurationExtended fileConfiguration)
         {
-            string jsonConfiguration = JsonConvert.SerializeObject(fileConfiguration, Formatting.Indented);
+            string jsonConfiguration = JsonConvert.SerializeObject(fileConfiguration, Formatting.Indented);            
 
             lock (_lock)
             {
@@ -49,17 +47,24 @@ namespace Ocelot.Extensions.Common.Repository
                 {
                     System.IO.File.Delete(_environmentFilePath);
                 }
-
                 System.IO.File.WriteAllText(_environmentFilePath, jsonConfiguration);
 
                 if (System.IO.File.Exists(_ocelotFilePath))
                 {
                     System.IO.File.Delete(_ocelotFilePath);
                 }
-
                 System.IO.File.WriteAllText(_ocelotFilePath, jsonConfiguration);
             }
+        }
 
+        public Task<Response<FileConfiguration>> Get()
+        {
+            return Task.FromResult<Response<FileConfiguration>>(new OkResponse<FileConfiguration>(GetExtended()));
+        }
+
+        public Task<Response> Set(FileConfiguration fileConfiguration)
+        {
+            SetExtended(new FileConfigurationExtended(fileConfiguration));
             return Task.FromResult<Response>(new OkResponse());
         }
     }

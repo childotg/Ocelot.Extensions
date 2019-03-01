@@ -6,7 +6,9 @@ namespace Ocelot.Extensions.Common.Repository
 {
     public interface IFileConfigurationRepositoryExtended
     {
-        Task<Response<FileConfigurationExtended>> GetExtended();
-        Task<Response> SetExtended(FileConfigurationExtended fileConfiguration);
+        FileConfigurationExtended GetExtended();
+        
+        void SetExtended(FileConfigurationExtended fileConfiguration);
+        
     }
 }

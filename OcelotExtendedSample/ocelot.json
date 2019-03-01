@@ -1,0 +1,69 @@
+﻿{
+  "ReRoutes": [
+    {
+      "UpstreamPathTemplate": "/cbc",
+      "UpstreamHttpMethod": [
+        "Get","Post"
+      ],
+      "DownstreamPathTemplate": "/cmlink/rss-canada",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "www.cbc.ca",
+          "Port": 443
+        }
+      ],
+      "DelegatingHandlers": [
+        "ReplaceHandler"
+      ],
+      "Key": "CBC"
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "https://api.mybusiness.com"
+  },
+  "RouteExtensions": {
+    "ReplaceHandler": {
+      "Settings": 1,
+      "Rules": [
+        {
+          "AppliesTo": [ "CBC" ],
+          "ReplaceDownstreamHeaders": [
+            {
+              "Header": "User-Agent",
+              "Find": "Mozilla",
+              "Replace": "private"
+            },
+            {
+              "Header": "User-Agent",
+              "Find": "AppleWebKit",
+              "Replace": "private"
+            },
+            {
+              "Header": "User-Agent",
+              "Find": "Chrome",
+              "Replace": "private"
+            },
+            {
+              "Header": "User-Agent",
+              "Find": "Safari",
+              "Replace": "private"
+            }
+          ],
+          "ReplaceDownstreamContent": [
+            {
+              "Find": "NothingToFind",
+              "Replace": "NothingToReplace"
+            }
+          ],
+          "ReplaceUpstreamContent": [
+            {
+              "Find": "<link>http:",
+              "Replace": "<link>https:"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

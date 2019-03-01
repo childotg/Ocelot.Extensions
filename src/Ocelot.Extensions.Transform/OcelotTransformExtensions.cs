@@ -14,17 +14,16 @@ namespace Ocelot.DependencyInjection
 {
     public static class OcelotTransformExtensions
     {
+        private static bool _withReplaceHandler = false;
         public static IOcelotBuilder WithReplaceHandler(this IOcelotBuilder builder)
         {
-            builder
-                .WithRouteExtensions();
-                //.Services
-                //.AddScoped<DelegatingHandler,ReplaceHandler>(
-                //        sp => new ReplaceHandler(
-                //            sp.GetService<IFileConfigurationRepositoryExtended>(),
-                //            sp.GetRequiredService<IHttpContextAccessor>(),
-                //            sp.GetService<ILoggerFactory>()));
-            builder.AddDelegatingHandler<ReplaceHandler>();
+            if (!_withReplaceHandler)
+            {
+                builder
+                    .WithRouteExtensions();                
+                builder.AddDelegatingHandler<ReplaceHandler>();
+                _withReplaceHandler = true;
+            }
             return builder;
         }
 

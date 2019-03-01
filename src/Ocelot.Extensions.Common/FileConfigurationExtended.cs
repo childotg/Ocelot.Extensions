@@ -7,6 +7,22 @@ namespace Ocelot.Extensions.Common
 {
     public class FileConfigurationExtended: FileConfiguration
     {
+        public FileConfigurationExtended()
+        {
+
+        }
+
+        public FileConfigurationExtended(FileConfiguration model)
+        {
+            if (model != null)
+            {
+                this.Aggregates = model.Aggregates;
+                this.DynamicReRoutes = model.DynamicReRoutes;
+                this.GlobalConfiguration = model.GlobalConfiguration;
+                this.ReRoutes = model.ReRoutes;
+            }
+        }
+
         public RouteExtensions RouteExtensions { get; set; }
     }
 

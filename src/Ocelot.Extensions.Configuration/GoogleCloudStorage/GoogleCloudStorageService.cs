@@ -13,14 +13,13 @@ namespace Ocelot.Extensions.Configuration.GoogleCloudStorage
     
     public class GoogleCloudStorageService : OcelotConfigurationFetchServiceBase
     {
-        private readonly GoogleCloudStorageConfiguration _config;
+        private readonly GoogleCloudStorageConfiguration _config;        
         
-        public GoogleCloudStorageService(GoogleCloudStorageConfiguration config, ILoggerFactory loggerFactory)
+        public GoogleCloudStorageService(GoogleCloudStorageConfiguration config, ILoggerFactory loggerFactory,
+            IHttpClientFactory httpFactory):base(httpFactory,loggerFactory)
         {
-            this._config = config;
-            this._logger = loggerFactory.CreateLogger<GoogleCloudStorageService>();
+            this._config = config;                      
         }
-
 
         protected override Task<OcelotConfigurationContentRaw> FetchDataImpl(string latestVersion)
         {
@@ -28,8 +27,6 @@ namespace Ocelot.Extensions.Configuration.GoogleCloudStorage
                 .SignUriForGoogleCloudStorage(_config.BucketName, _config.ObjectName, _config.AccessKey, _config.Secret);
             return GetWithHttpAndETAG(latestVersion, signedUri);
         }
-
-        
 
     }
 }
