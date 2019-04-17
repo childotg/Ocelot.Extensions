@@ -35,6 +35,12 @@ namespace Ocelot.Extensions.Configuration
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            if (_config == null || !_config.Enabled)
+            {
+                _logger.LogInformation("Configuration agent disabled...");
+                return;
+            }
+
             IOcelotConfigurationFetchService instance = null;
             try
             {

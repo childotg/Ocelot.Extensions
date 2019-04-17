@@ -12,7 +12,10 @@
           "Host": "rss.cbc.ca",
           "Port": 80
         }
-      ]
+      ],
+      "HttpHandlerOptions": {
+        "AllowAutoRedirect": true
+      }
     }
   ],
   "GlobalConfiguration": {

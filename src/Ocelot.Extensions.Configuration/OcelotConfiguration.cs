@@ -13,6 +13,7 @@ namespace Ocelot.Extensions.Configuration
         public AzureStorageConfiguration AzureStorage { get; set; }
         public GoogleCloudStorageConfiguration GoogleCloudStorage { get; set; }
         public int CheckingInterval { get; set; }
+        public bool Enabled { get; set; }
     }
 
     
